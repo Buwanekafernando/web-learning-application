@@ -1,12 +1,19 @@
 import React from 'react';
 import './styles/Homepagewosn.css';
-import HomePage from './components/HomePagewosn'; // Import your HomePage component
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePagewosn'; 
+import LoginPage from './components/Login';
+import RegisterPage from './components/Register';
 
 function App() {
   return (
-    <div className="App">
-      <HomePage /> {/* Use the HomePage component */}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </Router>
   );
 }
 

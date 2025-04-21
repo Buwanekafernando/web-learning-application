@@ -1,11 +1,17 @@
 import React from 'react';
 import '../styles/Homepagewosn.css'; 
 import homeImage from '../assets/academic.jpg';
-
+import { useNavigate } from 'react-router-dom';
 import { Book, Clock, Users, Brain, Star } from 'lucide-react';
 import { Facebook, Twitter, Instagram, Mail } from 'lucide-react';
 
 function HomePage() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="home-container">
       {/* Hero Section */}
@@ -15,7 +21,7 @@ function HomePage() {
           <div className="hero-text">
             <h1 className="title">Academix</h1>
             <p className="tagline">Empowering Smarter Learning & Productive Students</p>
-            <button className="login-button">Login</button>
+            <button className="login-button" onClick={handleLoginClick}>Login</button>
           </div>
         </div>
       </section>
