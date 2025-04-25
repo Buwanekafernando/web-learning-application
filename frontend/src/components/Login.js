@@ -1,36 +1,33 @@
 import React from 'react';
 import '../styles/Login.css';
 import loginImage from '../assets/book.png';
-import logo from '../assets/logo.png'; 
-import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 function Login() {
-  const navigate = useNavigate();
-  const handleRegisterClick = () => {
-    navigate('/register'); 
+  const handleGoogleLogin = () => {
+    // Redirect to your Spring Boot backend's Google OAuth2 endpoint
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   return (
     <div className="login-wrapper">
       {/* Left section */}
       <div className="login-left">
-        <form className="login-form">
-
+        <div className="login-form">
           {/* Logo at the top */}
           <div className="login-logo">
             <img src={logo} alt="Academix Logo" />
           </div>
 
-          <input type="text" placeholder="Username" className="login-input" required />
-          <input type="password" placeholder="Password" className="login-input" required />
-          
-          <button className="login-btn">Login</button>
-
-          <div className="register-section">
-            <p>Create an account?</p>
-            <button className="register-btn" onClick={handleRegisterClick}>Register</button>
-          </div>
-        </form>
+          <button className="google-login-btn" onClick={handleGoogleLogin}>
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google logo"
+              style={{ width: '20px', marginRight: '10px' }}
+            />
+            Sign in with Google
+          </button>
+        </div>
       </div>
 
       {/* Right section */}
