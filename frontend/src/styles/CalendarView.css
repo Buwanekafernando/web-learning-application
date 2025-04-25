@@ -1,0 +1,91 @@
+.calendar-page {
+    padding: 24px;
+    background: #6c5048;
+    color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .cal-icon {
+    font-size: 1.5rem;
+    margin-right: 8px;
+  }
+  
+  .calendar-header h1 {
+    flex: 1;
+    font-size: 1.25rem;
+  }
+  
+  .nav-buttons button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #e9d4b3;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .cal-cell {
+    padding: 8px;
+    min-height: 100px;
+    border: 1px solid #d3c2a1;
+    background: #f9f2e9;
+  }
+  
+  .cal-cell.header {
+    background: #e9d4b3;
+    font-weight: bold;
+    text-align: center;
+    color: #4d2b0c;
+  }
+  
+  .date-num {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    color: #555;
+    
+  }
+  
+  .event {
+    background: #e1f0f8;
+    color: #000;
+    margin-bottom: 4px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .event-actions > svg {
+    margin-left: 4px;
+    cursor: pointer;
+  }
+  
+  .star-icon {
+    color: #888;
+  }
+  
+  .starred-icon {
+    color: gold;
+  }
+  
+  .trash-icon {
+    color: #888;
+  }
+  

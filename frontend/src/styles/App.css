@@ -1,4 +1,38 @@
-.App {
-  text-align: center;
-  background-color: #fff;
+/* reset & full‑height root */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body, #root { height: 100%; }
+
+/* App layout */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
+
+.app-header {
+  height: 60px;
+  background: #4d2b0c;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.header-user-icon {
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.app-container {
+  display: flex;
+  flex: 1;
+}
+
+.main-view {
+  flex: 1;
+  background: #6c5048;
+  overflow-y: auto;
+  /* optional padding on sides */
+  padding: 0 24px;
+} 
