@@ -1,0 +1,38 @@
+package com.mywebapp.backend.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "tasks")
+public class Task {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
+    private String title;
+
+    private LocalDate date;
+
+    private Boolean starred = false;
+
+   /*  @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;*/
+
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
+
+    public Boolean getStarred() { return starred; }
+    public void setStarred(Boolean starred) { this.starred = starred; }
+}
