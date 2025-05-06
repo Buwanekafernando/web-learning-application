@@ -1,0 +1,88 @@
+.file-sharing-wrapper {
+    background-color: #3d2302;
+    min-height: 100vh;
+    color: #fff0d0;
+    padding: 40px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .file-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .file-header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff0d0;
+    margin-bottom: 10px;
+  }
+  
+  .file-header p {
+    font-size: 16px;
+    color: #d8c2a7;
+  }
+  
+  .upload-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  
+  .upload-btn {
+    background-color: #64514c;
+    color: #fff0d0;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .file-card {
+    background-color: #64514c;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+  }
+  
+  .file-info h4 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff0d0;
+    margin: 0;
+  }
+  
+  .file-info p {
+    font-size: 14px;
+    color: #d8c2a7;
+    margin: 0;
+  }
+  
+  .file-actions button {
+    background: transparent;
+    border: none;
+    color: #fff0d0;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  
+  .file-actions button:hover {
+    color: #ffd89c;
+  }
+  

@@ -9,7 +9,7 @@ public class AcademixApp {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AcademixApp.class, args);
-		System.out.println("✅ Server started! Try http://localhost:8080");
+		System.out.println("Server started! Try http://localhost:8080");
 	}
 	
 

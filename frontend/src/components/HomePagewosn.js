@@ -1,9 +1,8 @@
 import React from 'react';
-import '../styles/Homepagewosn.css'; 
+import '../styles/Homepagewosn.css';
 import homeImage from '../assets/academic.jpg';
 import { useNavigate } from 'react-router-dom';
-import { Book, Clock, Users, Brain, Star } from 'lucide-react';
-import { Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import { Book, Clock, Users, Brain, Star, Facebook, Twitter, Instagram, Mail } from 'lucide-react';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -96,7 +95,6 @@ function HomePage() {
           <p>&copy; {new Date().getFullYear()} Academix. All rights reserved.</p>
         </div>
       </footer>
-
     </div>
   );
 }
