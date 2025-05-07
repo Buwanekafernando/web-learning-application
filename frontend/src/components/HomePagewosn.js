@@ -62,11 +62,12 @@ function HomePage() {
             <h3>Study Timer</h3>
             <p>Track your focus with a built-in Pomodoro timer.</p>
           </div>
-          <div className="feature-card">
-            <Users className="icon" />
-            <h3>Community Sharing</h3>
-            <p>Connect, share posts and like others' ideas.</p>
-          </div>
+          <div className="feature-card" onClick={() => navigate('/posts')} style={{ cursor: 'pointer' }}>
+  <Users className="icon" />
+  <h3>Community Sharing</h3>
+  <p>Connect, share posts and like others' ideas.</p>
+</div>
+
           <div className="feature-card">
             <Brain className="icon" />
             <h3>Smart Assistant</h3>
