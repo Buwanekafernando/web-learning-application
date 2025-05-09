@@ -33,5 +33,8 @@ public class Like {
 
     @CreationTimestamp
     private Timestamp likedAt;
+
+    private Boolean liked;
+
 }
 

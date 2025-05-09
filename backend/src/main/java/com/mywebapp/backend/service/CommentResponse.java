@@ -8,15 +8,18 @@ import com.mywebapp.backend.model.Comment;
 public class CommentResponse {
     private Long commentId;
     private String content;
-    private String userName;
-    private LocalDateTime commentedAt;
+    private String commentedAt;
+    private String username;
+    private Long userId;
+    
 
     // Constructor
-    public CommentResponse(Comment comment) {
-        this.commentId = comment.getCommentId();
-        this.content = comment.getContent();
-        this.userName = comment.getUser() != null ? comment.getUser().getName() : "Unknown";
-        this.commentedAt = comment.getCommentedAt();
+    public CommentResponse(Long commentId, String content, String commentedAt, String username, Long userId) {
+        this.commentId = commentId;
+        this.content = content;
+        this.commentedAt = commentedAt;
+        this.username = username;
+        this.userId = userId;
     }
 
     // Getters
@@ -29,10 +32,10 @@ public class CommentResponse {
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
-    public LocalDateTime getCommentedAt() {
+    public String getCommentedAt() {
         return commentedAt;
     }
 
@@ -46,10 +49,17 @@ public class CommentResponse {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.username = userName;
     }
 
-    public void setCommentedAt(LocalDateTime commentedAt) {
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setCommentedAt(String commentedAt) {
         this.commentedAt = commentedAt;
     }
 }

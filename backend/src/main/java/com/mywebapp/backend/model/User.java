@@ -1,5 +1,9 @@
 
 package com.mywebapp.backend.model;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +27,10 @@ public class User {
     private String phone;
     private String username;
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Comment> comments;
 
     
 
