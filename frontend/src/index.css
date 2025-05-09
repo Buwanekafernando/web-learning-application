@@ -11,3 +11,84 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #4b2e1e;
+  color: white;
+}
+
+.sidebar {
+  width: 60px;
+  background-color: #3e2719;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  gap: 20px;
+}
+
+.icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+}
+
+.post {
+  width: 40%;
+  background-color: #b68b60;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 5px #000;
+}
+
+.comments {
+  flex: 1;
+  background-color: #d8c4a2;
+  border-radius: 10px;
+  padding: 20px;
+  overflow-y: auto;
+  color: black;
+}
+
+.comment-box {
+  background-color: #f5e7d3;
+  border-radius: 8px;
+  display: flex;
+  padding: 10px;
+  margin-top: 10px;
+  align-items: flex-start;
+  gap: 10px;
+  color: black;
+}
+
+.avatar {
+  font-size: 24px;
+  margin-top: 3px;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.text {
+  font-size: 13px;
+}
+
+.attachments {
+  font-size: 16px;
+  white-space: nowrap;
+}

@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import '../styles/Register.css';
 import RegImage from '../assets/book.png';
 import logo from '../assets/logo.png'; // Place your logo image in the assets folder
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -41,13 +43,27 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      alert('Registration successful!');
-      // submit logic here
+      try {
+        const response = await fetch("http://localhost:8096/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        const result = await response.text();
+        alert(result === "Success" ? "Registration successful!" : result);
+        navigate('/');
+      } catch (error) {
+        alert("Error connecting to server."+error);
+      }
     }
   };
+  
 
   return (
     <div className="register-wrapper">
