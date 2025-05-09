@@ -14,8 +14,8 @@ function App() {
       <div className="app-wrapper">
         <header className="app-header">
           <LuUser className="header-user-icon" />
-        </header>
-
+        </header> 
+ 
         <div className="app-container">
           <Sidebar />
           <main className="main-view">
