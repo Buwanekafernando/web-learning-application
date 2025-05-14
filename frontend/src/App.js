@@ -1,19 +1,34 @@
 import React from 'react';
 import './styles/Homepagewosn.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import HomePage from './components/HomePagewosn'; 
 import LoginPage from './components/Login';
-import RegisterPage from './components/Register';
+import Home from './components/Home'; 
+import FileSharing from './components/FileSharing'; 
+import ChatBox from './components/ChatBox';
+import Profile from './components/UserProfile';
+import ProfileView from './components/UserProfileView';
+import OAuthCallback from './components/OAuthCallback';
+import OAuth2Redirect from './components/OAuth2Redirect';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/filesharing" element={<FileSharing />} />
+          <Route path="/chatbox" element={<ChatBox />} />
+          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/uprofileview" element={<ProfileView />} />
+          <Route path="/oauth-callback" element={<OAuthCallback />} />
+          <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

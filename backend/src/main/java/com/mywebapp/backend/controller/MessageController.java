@@ -2,8 +2,11 @@ package com.mywebapp.backend.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,51 +18,68 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mywebapp.backend.entity.Message;
-import com.mywebapp.backend.repository.MessageRepository;
+import com.mywebapp.backend.service.MessageService;
 
 @RestController
 @RequestMapping("/api/messages")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class MessageController {
 
     @Autowired
-    private MessageRepository messageRepository;
+    private MessageService messageService;
 
-    // GET all messages
-    @GetMapping
-    public List<Message> getAllMessages() {
-        return messageRepository.findAll();
-    }
-
-    // GET messages by conversation ID
     @GetMapping("/conversation/{id}")
-    public List<Message> getMessagesByConversationId(@PathVariable Long id) {
-        return messageRepository.findByConversationId(id);
-    }
-
-    // POST - Create new message
-    @PostMapping
-    public Message createMessage(@RequestBody Message message) {
-        message.setCreatedAt(LocalDateTime.now());
-        message.setEdited(false); // default
-        return messageRepository.save(message);
-    }
-
-    // PUT - Update message text
-    @PutMapping("/{id}")
-    public Message updateMessage(@PathVariable Long id, @RequestBody Message updatedMessage) {
-        Message msg = messageRepository.findById(id).orElse(null);
-        if (msg != null) {
-            msg.setContent(updatedMessage.getContent());
-            msg.setEdited(true);
-            return messageRepository.save(msg);
+    public ResponseEntity<?> getMessagesByConversationId(@PathVariable Long id) {
+        try {
+            List<Message> messages = messageService.getMessagesByConversationId(id);
+            return ResponseEntity.ok(messages);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to fetch messages: " + e.getMessage()));
         }
-        return null;
     }
 
-    // DELETE - Delete message
+    @PostMapping
+    public ResponseEntity<?> createMessage(@RequestBody Message message) {
+        try {
+            message.setCreatedAt(LocalDateTime.now());
+            message.setEdited(false);
+            Message savedMessage = messageService.createMessage(message);
+            return ResponseEntity.ok(savedMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to create message: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMessage(
+            @PathVariable Long id,
+            @RequestBody Message updatedMessage) {
+        try {
+            Message existingMessage = messageService.getMessageById(id)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+
+            existingMessage.setContent(updatedMessage.getContent());
+            existingMessage.setEdited(true);
+            existingMessage.setUpdatedAt(LocalDateTime.now());
+
+            Message savedMessage = messageService.updateMessage(id, existingMessage);
+            return ResponseEntity.ok(savedMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to update message: " + e.getMessage()));
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public void deleteMessage(@PathVariable Long id) {
-        messageRepository.deleteById(id);
+    public ResponseEntity<?> deleteMessage(@PathVariable Long id) {
+        try {
+            messageService.deleteMessage(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to delete message: " + e.getMessage()));
+        }
     }
 }

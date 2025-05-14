@@ -1,41 +1,52 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Login.css';
-import loginImage from '../assets/book.png';
 import logo from '../assets/logo.png';
 
-function Login() {
-  const handleGoogleLogin = () => {
-    // Redirect to your Spring Boot backend's Google OAuth2 endpoint
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
-  };
+const Login = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
-  return (
-    <div className="login-wrapper">
-      {/* Left section */}
-      <div className="login-left">
-        <div className="login-form">
-          {/* Logo at the top */}
-          <div className="login-logo">
-            <img src={logo} alt="Academix Logo" />
-          </div>
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
-          <button className="google-login-btn" onClick={handleGoogleLogin}>
-            <img
-              src="https://developers.google.com/identity/images/g-logo.png"
-              alt="Google logo"
-              style={{ width: '20px', marginRight: '10px' }}
-            />
-            Sign in with Google
-          </button>
+    const handleGoogleLogin = () => {
+        window.location.href = 'http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:3000/oauth2/redirect';
+    };
+
+    return (
+        <div className="login-wrapper">
+            <div className="login-left">
+                <div className="login-form">
+                    <div className="login-logo">
+                        <img src={logo} alt="Academix Logo" />
+                    </div>
+                    <button 
+                        className="google-login-btn"
+                        onClick={handleGoogleLogin}
+                    >
+                        <img 
+                            src="https://www.google.com/favicon.ico" 
+                            alt="Google" 
+                            className="google-icon"
+                        />
+                        Sign in with Google
+                    </button>
+                </div>
+            </div>
+            <div className="login-right">
+                <img 
+                    src="https://img.freepik.com/free-vector/online-learning-isometric-concept_1284-17947.jpg" 
+                    alt="Learning" 
+                    className="login-img"
+                />
+            </div>
         </div>
-      </div>
-
-      {/* Right section */}
-      <div className="login-right">
-        <img src={loginImage} alt="Stack of books" className="login-img" />
-      </div>
-    </div>
-  );
-}
+    );
+};
 
 export default Login;

@@ -1,105 +1,145 @@
 package com.mywebapp.backend.controller;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mywebapp.backend.entity.FileEntity;
 import com.mywebapp.backend.service.FileService;
+import com.mywebapp.backend.service.LocalFileStorageService;
 
 @RestController
 @RequestMapping("/api/files")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", maxAge = 3600)
 public class FileController {
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello from FileController!";
-    }
 
     @Autowired
     private FileService fileService;
 
-    
+    @Autowired
+    private LocalFileStorageService fileStorageService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            Map<String, String> result = fileService.uploadFile(file);
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Please select a file to upload"));
+            }
+
+            Map<String, String> result = fileService.uploadFile(file, null);
             return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Upload failed: " + e.getMessage()));
+            e.printStackTrace(); // Add this for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Upload failed: " + e.getMessage()));
         }
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Map<String, String>> deleteFile(@RequestParam("public_id") String publicId) {
+    public ResponseEntity<?> deleteFile(@RequestParam("file_location") String fileLocation) {
         try {
-            Map result = fileService.deleteFile(publicId);
-            Map<String, String> response = new HashMap<>();
-            response.put("status", (String) result.get("result")); // Cloudinary returns "result": "ok"
-            response.put("public_id", publicId);
-
-            return ResponseEntity.ok(response);
+            fileService.deleteFile(fileLocation, null);
+            return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "File deleted successfully",
+                "file_location", fileLocation
+            ));
         } catch (Exception e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("status", "error");
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(500).body(error);
-        }   
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+                ));
+        }
     }
 
     @GetMapping("/list")
     public ResponseEntity<?> listFiles() {
         try {
-            List<Map<String, Object>> files = fileService.listAllFiles(); // 👈 correct typing
-            return ResponseEntity.ok(files); // will return JSON in Postman
+            List<FileEntity> files = fileService.listAllFilesByUser(null);
+            return ResponseEntity.ok(files);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to list files: " + e.getMessage()));
+                .body(Map.of("error", "Failed to list files: " + e.getMessage()));
         }
     }
-    
 
-    @GetMapping("/download/{publicId}")
-    public ResponseEntity<?> downloadFile(@PathVariable String publicId) {
+    @GetMapping("/download/{fileLocation}")
+    public ResponseEntity<?> downloadFile(@PathVariable String fileLocation) {
         try {
-            String fileUrl = fileService.getFileUrl(publicId);
-            return ResponseEntity.ok(Map.of("url", fileUrl));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get file URL: " + e.getMessage());
+            // Verify file exists
+            FileEntity fileEntity = fileService.getFileEntity(fileLocation, null);
+            if (fileEntity == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "File not found"));
+            }
+
+            Path filePath = fileStorageService.getFilePath(fileLocation);
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(fileEntity.getFileType()))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+                    .body(resource);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "File not found"));
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to download file: " + e.getMessage()));
         }
     }
-
 
     @PutMapping("/update")
-public ResponseEntity<Map<String, String>> updateFile(
-    @RequestParam("public_id") String publicId,
-    @RequestParam("file") MultipartFile newFile) {
-
-    try {
-        Map result = fileService.updateFile(publicId, newFile);
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "updated");
-        response.put("public_id", publicId);
-        response.put("url", (String) result.get("secure_url"));
-        return ResponseEntity.ok(response);
-    } catch (Exception e) {
-        return ResponseEntity.status(500).body(Map.of("error", "Update failed: " + e.getMessage()));
+    public ResponseEntity<?> updateFile(
+            @RequestParam("file_location") String fileLocation,
+            @RequestParam("file") MultipartFile newFile) {
+        try {
+            Map<String, String> result = fileService.updateFile(fileLocation, newFile, null);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Update failed: " + e.getMessage()));
+        }
     }
-}
 
+    @PutMapping("/rename")
+    public ResponseEntity<?> renameFile(
+            @RequestParam("file_location") String fileLocation,
+            @RequestParam("new_file_name") String newFileName) {
+        try {
+            FileEntity updatedFile = fileService.renameFile(fileLocation, newFileName, null);
+            return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "File renamed successfully",
+                "file_location", updatedFile.getFileLocation(),
+                "new_file_name", updatedFile.getFileName()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Rename failed: " + e.getMessage()));
+        }
+    }
 }
 
 

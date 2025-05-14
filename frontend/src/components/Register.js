@@ -1,4 +1,3 @@
-// Register.js
 import React, { useState } from 'react';
 import '../styles/Register.css';
 import RegImage from '../assets/book.png';
@@ -15,37 +14,100 @@ const Register = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setServerError('');
+    setSuccessMessage('');
   };
 
   const validate = () => {
     const newErrors = {};
-    const nameRegex = /^[A-Za-z ]+$/;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    const phoneRegex = /^\d+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@#.,]).{6,}$/;
+    const nameRegex = /^[A-Za-z\s'-]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const phoneRegex = /^\+?\d{10,15}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-    if (!nameRegex.test(formData.name)) newErrors.name = 'Name should contain only letters';
-    if (!emailRegex.test(formData.email)) newErrors.email = 'Email must be a valid @gmail.com address';
-    if (!phoneRegex.test(formData.phone)) newErrors.phone = 'Phone must contain only numbers';
-    if (!formData.username) newErrors.username = 'Username is required';
-    if (!passwordRegex.test(formData.password)) newErrors.password = 'Password must contain upper, lower case letters, and @,#,.';
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (!nameRegex.test(formData.name)) {
+      newErrors.name = 'Name should contain only letters, spaces, apostrophes, or hyphens';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number (10-15 digits)';
+    }
+
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters long';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (!passwordRegex.test(formData.password)) {
+      newErrors.password = 'Password must be at least 8 characters and contain uppercase, lowercase, and numbers';
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      alert('Registration successful!');
-      // submit logic here
+      try {
+        const params = new URLSearchParams();
+        params.append('name', formData.name);
+        params.append('username', formData.username);
+        params.append('email', formData.email);
+        params.append('password', formData.password);
+
+        const response = await fetch('http://localhost:8080/api/users/register?' + params.toString(), {
+          method: 'POST',
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          setServerError(errorText || 'Registration failed');
+          setSuccessMessage('');
+          return;
+        }
+
+        setSuccessMessage('Registration successful! You can now login.');
+        setServerError('');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          username: '',
+          password: '',
+          confirmPassword: '',
+        });
+      } catch (error) {
+        setServerError('Server error. Please try again later.');
+        setSuccessMessage('');
+      }
     }
   };
 
@@ -73,6 +135,8 @@ const Register = () => {
           {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
 
           <button type="submit">Register</button>
+          {serverError && <div className="error-msg">{serverError}</div>}
+          {successMessage && <div className="success-msg">{successMessage}</div>}
         </form>
       </div>
       <div className="register-right">

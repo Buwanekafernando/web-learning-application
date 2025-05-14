@@ -2,7 +2,6 @@ package com.mywebapp.backend.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,39 +13,31 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "messages")
 public class Message {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long messageId;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "conversation_id", nullable = false)
+    @JoinColumn(name = "conversation_id")
     private Conversation conversation;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id", nullable = true)
     private User sender;
 
-    @Column(columnDefinition = "TEXT")
     private String content;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isDeleted;
+    private boolean isEdited;
 
-    @Column(nullable = false)
-    private Boolean isDeleted = false;
-
-    @Column(name = "edited", nullable = false)
-    private boolean edited = false;
-
-    // Getters and setters
-
-    public Long getMessageId() {
-        return messageId;
+    // Getters and Setters
+    public Long getId() {
+        return id;
     }
 
-    public void setMessageId(Long messageId) {
-        this.messageId = messageId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Conversation getConversation() {
@@ -60,7 +51,7 @@ public class Message {
     public User getSender() {
         return sender;
     }
-    
+
     public void setSender(User sender) {
         this.sender = sender;
     }
@@ -71,7 +62,6 @@ public class Message {
 
     public void setContent(String content) {
         this.content = content;
-        this.updatedAt = LocalDateTime.now();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -90,19 +80,19 @@ public class Message {
         this.updatedAt = updatedAt;
     }
 
-    public Boolean getIsDeleted() {
+    public boolean isDeleted() {
         return isDeleted;
     }
 
-    public void setIsDeleted(Boolean isDeleted) {
+    public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
     public boolean isEdited() {
-        return edited;
+        return isEdited;
     }
-    
-    public void setEdited(boolean edited) {
-        this.edited = edited;
+
+    public void setEdited(boolean isEdited) {
+        this.isEdited = isEdited;
     }
 }

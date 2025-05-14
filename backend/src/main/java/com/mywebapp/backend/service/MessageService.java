@@ -15,27 +15,30 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public List<Message> getAllMessages() {
-        return messageRepository.findAll();
-    }
-
-    public Optional<Message> getMessageById(Long id) {
-        return messageRepository.findById(id);
+    public List<Message> getMessagesByConversationId(Long conversationId) {
+        return messageRepository.findByConversationId(conversationId);
     }
 
     public Message createMessage(Message message) {
         return messageRepository.save(message);
     }
 
-    public Message updateMessage(Long id, Message updatedMessage) {
-        return messageRepository.findById(id).map(msg -> {
-            msg.setContent(updatedMessage.getContent());
-            msg.setEdited(true);
-            return messageRepository.save(msg);
-        }).orElse(null);
+    public Optional<Message> getMessageById(Long id) {
+        return messageRepository.findById(id);
+    }
+
+    public Message updateMessage(Long id, Message message) {
+        if (messageRepository.existsById(id)) {
+            message.setId(id);
+            return messageRepository.save(message);
+        }
+        throw new RuntimeException("Message not found with id: " + id);
     }
 
     public void deleteMessage(Long id) {
+        if (!messageRepository.existsById(id)) {
+            throw new RuntimeException("Message not found with id: " + id);
+        }
         messageRepository.deleteById(id);
     }
 }
